@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Enjoy these games!! :)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box;}
+body{
+ font-family:Arial;
+ text-align:center;
+ background:#f0f8ff;
+ margin:0;
+ padding:10px;
+}
+.slide{
+ display:none;
+ min-height:100vh;
+ animation:fade 0.6s;
+}
+.active{
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+}
+button{
+ padding:14px 22px;
+ margin:8px;
+ font-size:16px;
+ border:none;
+ border-radius:8px;
+ background:#4CAF50;
+ color:white;
+ cursor:pointer;
+}
+input{
+ padding:12px;
+ width:90%;
+ max-width:300px;
+ margin:8px;
+}
+.box{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:10px;
+ max-width:300px;
+}
+.box button{
+ height:80px;
+ font-size:26px;
+ background:#fff;
+ border:2px solid #333;
+ color:#000;
+}
+.win{color:green;font-weight:bold;}
+.lose{color:red;font-weight:bold;}
+@keyframes fade{
+ from{opacity:0; transform:translateY(30px);}
+ to{opacity:1; transform:translateY(0);}
+}
+@media(max-width:600px){
+ h1{font-size:24px;}
+ h2{font-size:20px;}
+ button{width:90%;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div class="slide active">
+<h1>Newly tried (not perfect)</h1>
+<p>Thoda adjust kr lena ji</p>
+<button onclick="next()">Start ➜</button>
+</div>
+
+<!-- GUESS -->
+<div class="slide">
+<h2>Number Guessing Game</h2>
+<input type="number" id="guess">
+<button onclick="checkGuess()">Check</button>
+<p id="guessRes"></p>
+<button onclick="goNext('guess')">Continue ➜</button>
+</div>
+
+<!-- TIC TAC TOE -->
+<div class="slide">
+<h2>Tic Tac Toe (You vs Computer)</h2>
+<div class="box" id="board">
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+<button onclick="playerMove(this)"></button>
+</div>
+<p id="tttMsg"></p>
+<button onclick="goNext('ttt')">Continue ➜</button>
+</div>
+
+<!-- DICE -->
+<div class="slide">
+<h2>Dice Game</h2>
+<p> Get number 4</p>
+<button onclick="rollDice()">Roll Dice</button>
+<p id="diceRes"></p>
+<button onclick="goNext('dice')">Continue ➜</button>
+</div>
+
+<!-- QUIZ -->
+<div class="slide">
+<h2>Quiz Game</h2>
+<p>DO you love SHREYAS?</p>
+<button onclick="quiz('yes')">yes</button>
+<button onclick="quiz('no')">no</button>
+<p id="quizRes"></p>
+<button onclick="goNext('quiz')">Continue ➜</button>
+</div>
+
+<!-- CLICK COUNTER -->
+<div class="slide">
+<h2>Click Counter Game</h2>
+<button onclick="increase()">➕ Increase</button>
+<button onclick="decrease()">➖ Decrease</button>
+<button onclick="reset()">🔁 Reset</button>
+<p id="clickRes">0</p>
+<p id="clickMsg"></p>
+<button onclick="goNext('click')">Continue ➜</button>
+</div>
+
+<!-- LOVE -->
+<div class="slide">
+<h2>❤️ Love Calculator ❤️</h2>
+<input id="n1" placeholder="Your Name">
+<input id="n2" placeholder="Partner Name">
+<button onclick="calculateLove()">Calculate</button>
+<p id="loveRes"></p>
+</div>
+
+<script>
+/* SLIDE CONTROL */
+let slides=document.querySelectorAll(".slide");
+let index=0;
+function next(){
+ slides[index].classList.remove("active");
+ slides[++index].classList.add("active");
+}
+
+/* CONTINUE VALIDATION */
+let done={guess:false,ttt:false,dice:false,quiz:false,click:false};
+function goNext(game){
+ if(done[game]) next();
+ else alert("Please complete the game first!");
+}
+
+/* GUESS GAME */
+let number=Math.floor(Math.random()*10)+1;
+function checkGuess(){
+ guessRes.innerHTML=(guess.value==number)?"🎉 You Win!":"❌ Try Again";
+ done.guess=true;
+}
+
+/* TIC TAC TOE */
+let boardButtons=document.querySelectorAll("#board button");
+let gameOver=false;
+
+function playerMove(btn){
+ if(btn.innerHTML!="" || gameOver) return;
+ btn.innerHTML="X";
+
+ if(checkWin("X")){
+  tttMsg.innerHTML="🎉 YOU WIN!";
+  tttMsg.className="win";
+  gameOver=true;
+  done.ttt=true;
+  return;
+ }
+ computerMove();
+}
+
+function computerMove(){
+ let empty=[...boardButtons].filter(b=>b.innerHTML=="");
+ if(empty.length==0) return;
+ let move=empty[Math.floor(Math.random()*empty.length)];
+ move.innerHTML="O";
+
+ if(checkWin("O")){
+  tttMsg.innerHTML="😞 YOU LOSE!";
+  tttMsg.className="lose";
+  gameOver=true;
+  done.ttt=true;
+ }
+}
+
+function checkWin(s){
+ let p=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+ return p.some(a=>boardButtons[a[0]].innerHTML==s &&
+                 boardButtons[a[1]].innerHTML==s &&
+                 boardButtons[a[2]].innerHTML==s);
+}
+
+/* DICE */
+function rollDice(){
+ diceRes.innerHTML="🎲 Dice: "+(Math.floor(Math.random()*6)+1);
+ done.dice=true;
+}
+
+/* QUIZ (FIXED) */
+function quiz(ans){
+ if(ans=="yes"){
+  quizRes.innerHTML="✅ Correct Answer!";
+  quizRes.style.color="green";
+  done.quiz=true;
+ }else{
+  quizRes.innerHTML="❌ Wrong Answer, Try Again!";
+  quizRes.style.color="red";
+  done.quiz=false;
+ }
+}
+
+/* CLICK COUNTER */
+let clickCount=0;
+function increase(){
+ clickCount++;
+ clickRes.innerHTML=clickCount;
+ clickMsg.innerHTML="Increased!";
+ done.click=true;
+}
+function decrease(){
+ if(clickCount>0){
+  clickCount--;
+  clickRes.innerHTML=clickCount;
+  clickMsg.innerHTML="Decreased!";
+  done.click=true;
+ }
+}
+function reset(){
+ clickCount=0;
+ clickRes.innerHTML=clickCount;
+ clickMsg.innerHTML="Reset!";
+ done.click=true;
+}
+
+/* LOVE CALCULATOR */
+function calculateLove(){
+ let a=n1.value.toLowerCase();
+ let b=n2.value.toLowerCase();
+ if((a=="shreyas"&&(b=="nandini"||b=="nandani")) ||
+    (b=="shreyas"&&(a=="nandini"||a=="nandani")))
+  loveRes.innerHTML="❤️ Love = 100% ❤️";
+ else
+  loveRes.innerHTML="❤️ Love = "+(Math.floor(Math.random()*100)+1)+"% ❤️";
+}
+</script>
+
+</body>
+</html>
+
